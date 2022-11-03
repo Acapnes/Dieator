@@ -17,7 +17,7 @@ export class FoodController {
 
   @Post('/diet')
   async getDiet(@Body() dietDesiredValues: DietDesiredValues): Promise<Food[] | any> {
-    return this.dietService.createDiet(dietDesiredValues);
+    return await this.dietService.createDiet(dietDesiredValues);
   }
 
   @Post('/create')
