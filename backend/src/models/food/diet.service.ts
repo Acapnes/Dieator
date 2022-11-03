@@ -15,30 +15,49 @@ export class DietService {
   ) {}
 
   async createDiet(dietDesiredValues: DietDesiredValues) {
-    const resultDevidedFoodsRandomizeCalories =
-      await this.dietHelperService.mealRandomCalories(dietDesiredValues);
-    return await this.dietReturnCalories(resultDevidedFoodsRandomizeCalories);
+    const resultDevidedFoodsRandomizeCalories = await this.dietHelperService.mealRandomCalories(dietDesiredValues);
+    return await this.returnDietList(resultDevidedFoodsRandomizeCalories);
   }
 
-  async getMealForValues(mealCalorie: any, mealTime: string): Promise<Food> {
-    return await this.foodModel.findOne({
+  async getMealForValues(mealCalorie: any,mealTime: string): Promise<Food> {
+    let extraCalorieLimit = 5;
+    let selectedMeal = await this.foodModel.findOne({
       mainMealTimeType: mealTime,
       kcal: {
-        $gte: parseInt(mealCalorie) - 20,
-        $lte: parseInt(mealCalorie) + 20,
+        $gte: parseInt(mealCalorie) - extraCalorieLimit / 2,
+        $lte: parseInt(mealCalorie) + extraCalorieLimit,
       },
     });
+
+    if (selectedMeal === null) {
+      while (extraCalorieLimit <= 15) {
+        extraCalorieLimit += 5;
+        selectedMeal = await this.foodModel.findOne({
+          mainMealTimeType: mealTime,
+          kcal: {
+            $gte: parseInt(mealCalorie) - extraCalorieLimit / 2,
+            $lte: parseInt(mealCalorie) + extraCalorieLimit,
+          },
+        });
+      }
+    }
+
+    return selectedMeal;
   }
 
-  async dietReturnCalories(resultDevidedFoodsRandomizeCalories: Array<String>) {
+  async returnDietList(resultDevidedFoodsRandomizeCalories: Array<String>) {
     let returnFoodArray = [];
-    await resultDevidedFoodsRandomizeCalories.forEach(
-      (calorie, calorieIndex) => {
-        if (calorieIndex < 3) {
-         
-        }
-        console.log(calorieIndex, calorie);
-      },
-    );
+    for (let i = 0; i < resultDevidedFoodsRandomizeCalories.length; i++) {
+      returnFoodArray.push([]);
+      for (let j = 0; j < resultDevidedFoodsRandomizeCalories[i].length; j++) {
+        returnFoodArray[i].push(
+          await this.getMealForValues(
+            resultDevidedFoodsRandomizeCalories[j],
+            await this.dietHelperService.maelTimeSwitcher(i),
+          ),
+        );
+      }
+    }
+    return await returnFoodArray;
   }
 }
