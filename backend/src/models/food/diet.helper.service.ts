@@ -6,20 +6,36 @@ export class DietHelperService {
 
   async mealRandomCalories(dietDesiredValues: DietDesiredValues) {
     const resultDevidedMeals = await this.divideDietToMeals(dietDesiredValues);
-    const snackCount =
-      dietDesiredValues.mealCount > 3 ? dietDesiredValues.mealCount - 3 : 0;
+    const snackCount = dietDesiredValues.mealCount > 3 ? dietDesiredValues.mealCount - 3 : 0;
     let randomizeArray = [];
     resultDevidedMeals.forEach(async (food, foodTimeIndex) => {
       const randomized = await this.mealCalorieRandomizator(food);
-
       if (foodTimeIndex < 3) {
         randomizeArray.push([]);
         randomizeArray[foodTimeIndex].push(randomized[0], randomized[1]);
       } else
-        randomizeArray.push(await this.snackCalorieRandomizator(food, snackCount));
+        randomizeArray.push(
+          await this.snackCalorieRandomizator(food, snackCount),
+        );
     });
-
     return await randomizeArray;
+  }
+
+  async maelTimeSwitcher(maelTime: Number): Promise<string> {
+    switch (maelTime) {
+      case 0: {
+        return 'breakfast';
+      }
+      case 1: {
+        return 'lunch';
+      }
+      case 2: {
+        return 'dinner';
+      }
+      case 3: {
+        return 'snack';
+      }
+    }
   }
 
   async mealCalorieRandomizator(totalMealCalorie: any) {
