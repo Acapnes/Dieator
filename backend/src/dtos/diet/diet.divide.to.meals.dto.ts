@@ -9,5 +9,5 @@ export class DietDivieToMealsDto {
 
   totalSnackCalories?: Number;
 
-  snacksCount?: Number;
+  snackCount?: Number;
 }

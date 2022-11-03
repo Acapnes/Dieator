@@ -9,22 +9,36 @@ import { DietHelperService } from './diet.helper.service';
 
 @Injectable()
 export class DietService {
-  constructor(@InjectModel(Food.name) private foodModel: Model<FoodDocument>, private dietHelperService:DietHelperService) {}
+  constructor(
+    @InjectModel(Food.name) private foodModel: Model<FoodDocument>,
+    private dietHelperService: DietHelperService,
+  ) {}
 
-  async createDiet(dietDesiredValues: DietDesiredValues): Promise<Food[]> {
-    const resultDevidedMealsRandomizeCalories = await this.dietHelperService.mealRandomCalories(dietDesiredValues);
-    console.log(resultDevidedMealsRandomizeCalories);
-    return [
-        resultDevidedMealsRandomizeCalories?.breakfast && await this.getMealForValues(resultDevidedMealsRandomizeCalories.breakfast?.first, 'breakfast'),
-        resultDevidedMealsRandomizeCalories?.breakfast && await this.getMealForValues(resultDevidedMealsRandomizeCalories.breakfast?.second,'breakfast'),
-        resultDevidedMealsRandomizeCalories?.lunch && await this.getMealForValues(resultDevidedMealsRandomizeCalories?.lunch?.first,'lunch'),
-        resultDevidedMealsRandomizeCalories?.lunch && await this.getMealForValues(resultDevidedMealsRandomizeCalories?.lunch?.second,'lunch'),
-        resultDevidedMealsRandomizeCalories?.dinner && await this.getMealForValues(resultDevidedMealsRandomizeCalories?.dinner?.first,'dinner'),
-        resultDevidedMealsRandomizeCalories?.dinner && await this.getMealForValues(resultDevidedMealsRandomizeCalories?.dinner?.second,'dinner'),
-    ]
-  };  
+  async createDiet(dietDesiredValues: DietDesiredValues) {
+    const resultDevidedFoodsRandomizeCalories =
+      await this.dietHelperService.mealRandomCalories(dietDesiredValues);
+    return await this.dietReturnCalories(resultDevidedFoodsRandomizeCalories);
+  }
 
-  async getMealForValues(mealCalorie: any, mealTime:string): Promise<Food> {
-    return this.foodModel.findOne({mainMealTimeType: mealTime ,kcal: {$gte: parseInt(mealCalorie) - 20,$lte: parseInt(mealCalorie) + 20}})
+  async getMealForValues(mealCalorie: any, mealTime: string): Promise<Food> {
+    return await this.foodModel.findOne({
+      mainMealTimeType: mealTime,
+      kcal: {
+        $gte: parseInt(mealCalorie) - 20,
+        $lte: parseInt(mealCalorie) + 20,
+      },
+    });
+  }
+
+  async dietReturnCalories(resultDevidedFoodsRandomizeCalories: Array<String>) {
+    let returnFoodArray = [];
+    await resultDevidedFoodsRandomizeCalories.forEach(
+      (calorie, calorieIndex) => {
+        if (calorieIndex < 3) {
+         
+        }
+        console.log(calorieIndex, calorie);
+      },
+    );
   }
 }
