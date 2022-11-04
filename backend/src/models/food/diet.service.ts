@@ -16,10 +16,14 @@ export class DietService {
 
   async createDiet(dietDesiredValues: DietDesiredValues) {
     const resultDevidedFoodsRandomizeCalories = await this.dietHelperService.mealRandomCalories(dietDesiredValues);
-    return await this.returnDietList(resultDevidedFoodsRandomizeCalories);
+    const totalCalorie = await this.dietHelperService.mealCalorieTotalizer(resultDevidedFoodsRandomizeCalories);
+    return {
+      totalCalorie: totalCalorie,
+      mealList: await this.returnDietList(resultDevidedFoodsRandomizeCalories),
+    };
   }
 
-  async getMealForValues(mealCalorie: any,mealTime: string): Promise<Food> {
+  async getMealForValues(mealCalorie: any, mealTime: string): Promise<Food> {
     let extraCalorieLimit = 5;
     let selectedMeal = await this.foodModel.findOne({
       mainMealTimeType: mealTime,
@@ -30,7 +34,7 @@ export class DietService {
     });
 
     if (selectedMeal === null) {
-      while (extraCalorieLimit <= 15) {
+      while (extraCalorieLimit <= 295) {
         extraCalorieLimit += 5;
         selectedMeal = await this.foodModel.findOne({
           mainMealTimeType: mealTime,
@@ -50,12 +54,7 @@ export class DietService {
     for (let i = 0; i < resultDevidedFoodsRandomizeCalories.length; i++) {
       returnFoodArray.push([]);
       for (let j = 0; j < resultDevidedFoodsRandomizeCalories[i].length; j++) {
-        returnFoodArray[i].push(
-          await this.getMealForValues(
-            resultDevidedFoodsRandomizeCalories[j],
-            await this.dietHelperService.maelTimeSwitcher(i),
-          ),
-        );
+        returnFoodArray[i].push(await this.getMealForValues(resultDevidedFoodsRandomizeCalories[i][j],await this.dietHelperService.maelTimeSwitcher(i)));
       }
     }
     return await returnFoodArray;
