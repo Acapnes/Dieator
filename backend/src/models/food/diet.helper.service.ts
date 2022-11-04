@@ -3,10 +3,10 @@ import { DietDesiredValues } from 'src/dtos/diet/diet.desired.values.dto';
 
 @Injectable()
 export class DietHelperService {
-
   async mealRandomCalories(dietDesiredValues: DietDesiredValues) {
     const resultDevidedMeals = await this.divideDietToMeals(dietDesiredValues);
-    const snackCount = dietDesiredValues.mealCount > 3 ? dietDesiredValues.mealCount - 3 : 0;
+    const snackCount =
+      dietDesiredValues.mealCount > 3 ? dietDesiredValues.mealCount - 3 : 0;
     let randomizeArray = [];
     resultDevidedMeals.forEach(async (food, foodTimeIndex) => {
       const randomized = await this.mealCalorieRandomizator(food);
@@ -36,6 +36,16 @@ export class DietHelperService {
         return 'snack';
       }
     }
+  }
+
+  async mealCalorieTotalizer(mealArray: Array<string>) {
+    let totalCalorie = 0;
+    for (let i = 0; i < mealArray.length; i++) {
+      for (let j = 0; j < mealArray[i].length; j++) {
+        totalCalorie += parseInt(mealArray[i][j])
+      }
+    }
+    return totalCalorie;
   }
 
   async mealCalorieRandomizator(totalMealCalorie: any) {
