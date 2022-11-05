@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DietDesiredValues } from 'src/dtos/diet/diet.desired.values.dto';
+import { Food } from 'src/schemas/food.schema';
 
 @Injectable()
 export class DietHelperService {
@@ -13,10 +14,16 @@ export class DietHelperService {
       if (foodTimeIndex < 3) {
         randomizeArray.push([]);
         randomizeArray[foodTimeIndex].push(randomized[0], randomized[1]);
-      } else
-        randomizeArray.push(
-          await this.snackCalorieRandomizator(food, snackCount),
+      } else {
+        const snackArray = await this.snackCalorieRandomizator(
+          food,
+          snackCount,
         );
+        for (let i = 0; i < snackArray.length; i++) {
+          randomizeArray.push([]);
+          randomizeArray[i + 3].push(snackArray[i]);
+        }
+      }
     });
     return await randomizeArray;
   }
@@ -35,17 +42,46 @@ export class DietHelperService {
       case 3: {
         return 'snack';
       }
+      default: {
+        return 'snack';
+      }
     }
   }
 
-  async mealCalorieTotalizer(mealArray: Array<string>) {
-    let totalCalorie = 0;
+  async dietCalorieTotalizer(mealsCaloriesArray: Array<Number>) {
+    let totalDietCalorie = 0;
+    for (let i = 0; i < mealsCaloriesArray.length; i++) {
+      totalDietCalorie += parseInt(mealsCaloriesArray[i].toString());
+    }
+    return totalDietCalorie;
+  }
+
+  async mealCalorieTotalizer(mealArray: Array<Food[]>) {
+    let totalMealCalorieArray = [];
     for (let i = 0; i < mealArray.length; i++) {
-      for (let j = 0; j < mealArray[i].length; j++) {
-        totalCalorie += parseInt(mealArray[i][j])
+      for (let j = 0; j < mealArray[i].length - 1; j++) {
+        if (!mealArray[i][j]) {
+          totalMealCalorieArray.push(
+            0 + parseInt(mealArray[i][j + 1]?.kcal.toString()),
+          );
+        } else if (!mealArray[i][j + 1]) {
+          totalMealCalorieArray.push(
+            parseInt(mealArray[i][j]?.kcal.toString()) + 0,
+          );
+        } else if (mealArray[i][j] && mealArray[i][j + 1]) {
+          totalMealCalorieArray.push(
+            parseInt(mealArray[i][j]?.kcal.toString()) +
+              parseInt(mealArray[i][j + 1]?.kcal.toString()),
+          );
+        } else {
+          totalMealCalorieArray.push(0);
+        }
+      }
+      if (i >= 3) {
+        totalMealCalorieArray.push(parseInt(mealArray[i][0]?.kcal.toString()));
       }
     }
-    return totalCalorie;
+    return totalMealCalorieArray;
   }
 
   async mealCalorieRandomizator(totalMealCalorie: any) {

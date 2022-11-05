@@ -16,10 +16,13 @@ export class DietService {
 
   async createDiet(dietDesiredValues: DietDesiredValues) {
     const resultDevidedFoodsRandomizeCalories = await this.dietHelperService.mealRandomCalories(dietDesiredValues);
-    const totalCalorie = await this.dietHelperService.mealCalorieTotalizer(resultDevidedFoodsRandomizeCalories);
+    const returnMealList = await this.returnDietList(resultDevidedFoodsRandomizeCalories);
+    const totalMealsCalories = await this.dietHelperService.mealCalorieTotalizer(returnMealList);
+    const totalDietCalorie = await this.dietHelperService.dietCalorieTotalizer(totalMealsCalories);
     return {
-      totalCalorie: totalCalorie,
-      mealList: await this.returnDietList(resultDevidedFoodsRandomizeCalories),
+      totalDietCalorie: totalDietCalorie,
+      totalMealsCalories: totalMealsCalories,
+      mealList: returnMealList
     };
   }
 
@@ -34,7 +37,7 @@ export class DietService {
     });
 
     if (selectedMeal === null) {
-      while (extraCalorieLimit <= 295) {
+      while (extraCalorieLimit <= 395) {
         extraCalorieLimit += 5;
         selectedMeal = await this.foodModel.findOne({
           mainMealTimeType: mealTime,
