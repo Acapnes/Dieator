@@ -19,9 +19,11 @@ export class DietService {
     const returnMealList = await this.returnDietList(resultDevidedFoodsRandomizeCalories);
     const totalMealsCalories = await this.dietHelperService.mealCalorieTotalizer(returnMealList);
     const totalDietCalorie = await this.dietHelperService.dietCalorieTotalizer(totalMealsCalories);
+    const totalDietMacroTypes = await this.dietHelperService.dietMicroTypesTotalizer(returnMealList);
     return {
       totalDietCalorie: totalDietCalorie,
       totalMealsCalories: totalMealsCalories,
+      totalDietMacroTypes:totalDietMacroTypes,
       mealList: returnMealList
     };
   }

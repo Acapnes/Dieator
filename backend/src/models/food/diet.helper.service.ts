@@ -56,6 +56,28 @@ export class DietHelperService {
     return totalDietCalorie;
   }
 
+  async dietMicroTypesTotalizer(mealsCaloriesArray: Food[] | any) {
+    let totalCarbs = 0;
+    let totalFat = 0;
+    let totalProtein = 0;
+    for (let i = 0; i < mealsCaloriesArray.length; i++) {
+      for (let j = 0; j < mealsCaloriesArray[i].length; j++) {
+        if (mealsCaloriesArray[i][j]) {
+          totalCarbs += parseInt(mealsCaloriesArray[i][j]?.carbs.toString());
+          totalFat += parseInt(mealsCaloriesArray[i][j]?.fat.toString());
+          totalProtein += parseInt(
+            mealsCaloriesArray[i][j]?.protein.toString(),
+          );
+        }
+      }
+    }
+    return {
+      carbs: totalCarbs,
+      fat: totalFat,
+      protein: totalProtein,
+    };
+  }
+
   async mealCalorieTotalizer(mealArray: Array<Food[]>) {
     let totalMealCalorieArray = [];
     for (let i = 0; i < mealArray.length; i++) {
