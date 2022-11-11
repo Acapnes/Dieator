@@ -1,0 +1,24 @@
+version: '3'
+services:
+  react-frontend:
+    image: dieator-frontend-react
+    build: /frontend
+    stdin_open: true
+    ports:
+      - "3000:3000"
+  nestjs-backend:
+    image: dieator-backend-nestjs
+    build: /backend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+volumes:
+  mongo-data:
+    driver: local
