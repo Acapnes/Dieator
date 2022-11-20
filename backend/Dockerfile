@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:18 AS development
 
 WORKDIR /app
 
@@ -11,5 +11,5 @@ COPY . .
 
 EXPOSE 3001
 
-CMD ["npm","run","start:dev"]
+CMD [ "npm", "run", "start:dev"]
 

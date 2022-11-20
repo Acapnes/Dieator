@@ -13,7 +13,6 @@ export class FoodService {
   }
 
   async createFood(file : any, foodCreationDto: FoodCreationDto){
-
     const newFood = await new this.foodModel(foodCreationDto);
 
     newFood.food_image.data = file.buffer;
