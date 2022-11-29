@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { FoodModule } from './models/food/food.module';
 
 @Module({
-  imports: [MongooseModule.forRoot('mongodb://mongo:27017/dieator'),FoodModule],
+  imports: [MongooseModule.forRoot('mongodb://127.0.0.1:27017/dieator'),FoodModule],
   controllers: [AppController],
   providers: [AppService],
 })
