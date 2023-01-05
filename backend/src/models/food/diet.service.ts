@@ -39,7 +39,7 @@ export class DietService {
     });
 
     if (selectedMeal === null) {
-      while (extraCalorieLimit <= 395) {
+      while (extraCalorieLimit <= 100) {
         extraCalorieLimit += 5;
         selectedMeal = await this.foodModel.findOne({
           mainMealTimeType: mealTime,
